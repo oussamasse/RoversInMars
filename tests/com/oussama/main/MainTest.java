@@ -18,14 +18,11 @@ public class MainTest {
     	Rover rover1 = new Rover(new Position(1,2), DirectionsEnum.NORTH);
     	Rover rover2 = new Rover(new Position(3,3), DirectionsEnum.EAST);
     	
-    	rover1.getInstructionsFromSequence("LMLMLMLMM");
-    	rover2.getInstructionsFromSequence("MMRMMRMRRM");
-    	
     	plateau.addRover(rover1);
     	plateau.addRover(rover2);
     	
-    	rover1.launchInstructions();
-    	rover2.launchInstructions();	
+    	rover1.launchInstructions("LMLMLMLMM");
+    	rover2.launchInstructions("MMRMMRMRRM");	
 		assertEquals("1 3 N", rover1.toString());
 		assertEquals("5 1 E", rover2.toString());
 	}

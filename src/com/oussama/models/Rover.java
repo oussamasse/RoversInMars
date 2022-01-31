@@ -1,36 +1,22 @@
 package com.oussama.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.oussama.enums.DirectionsEnum;
-import com.oussama.enums.InstructionsEnum;
-import com.oussama.exceptions.MoveRoverException;
+import com.oussama.exceptions.PatternException;
+import com.oussama.exceptions.RoverPositionException;
 
 public class Rover {
 	private Position position;
     private DirectionsEnum direction;
     private Plateau plateau;
     private String sequence;
-
-    private List<InstructionsEnum> instructions;
     
     public Rover(Position position, DirectionsEnum direction) {
     	this.position = position;
     	this.direction = direction;
-    	this.instructions = new ArrayList<>();
     }
 
-    public void getInstructionsFromSequence(String sequence) {
-    	
-    	String[] res = sequence.split("");
-    	for(String c : res) {
-    		InstructionsEnum val = InstructionsEnum.getEnumFromValue(c);
-    		this.instructions.add(val);
-    	}
-    }
-    
-    private void goLeft () {
+    //Instruction au rover pour se tourner à gauche
+    private void turnLeft () {
     	switch(this.direction) {
     	case NORTH:
     		this.direction = DirectionsEnum.WEST;
@@ -49,7 +35,8 @@ public class Rover {
     	}
     }
     
-    private void goRight() {
+    //Instruction au rover pour se tourner à droite
+    private void turnRight() {
     	switch(this.direction) {
     	case NORTH:
     		this.direction = DirectionsEnum.EAST;
@@ -68,66 +55,33 @@ public class Rover {
     	}
     }
     
-    private void moveRoverInPlateau(Position oldPosition, Position newPosition) {
-    	this.plateau.grid[oldPosition.getX()][oldPosition.getY()] = null;
-		this.position.setX(newPosition.getX());
-		this.position.setY(newPosition.getY());
-		this.plateau.grid[newPosition.getX()][newPosition.getY()] = this;
-    }
+    //Instruction au rover pour se déplacer
+    private void move() {		
+		Position newPosition = this.position.moveTo(direction);
+		if (!newPosition.IsOnPlateau(plateau)) {
+			throw new RoverPositionException();
+		}
+		position = newPosition;
+	}
     
-    private void move() throws Exception {
-    	switch(this.direction) {
-    	case NORTH:
-    		if(this.position.getY()+1 > plateau.rowsCount) {
-    			throw new MoveRoverException();
-    		}
-    		moveRoverInPlateau(this.position, new Position(this.position.getX(), this.position.getY()+1));
-    		break;
-    	case EAST:
-    		if(this.position.getX()+1 > plateau.columnsCount) {
-    			throw new MoveRoverException();
-    		}
-    		moveRoverInPlateau(this.position, new Position(this.position.getX()+1, this.position.getY()));
-    		break;
-    	case SOUTH:
-    		if(this.position.getY()-1 < 0) {
-    			throw new MoveRoverException();
-    		}
-    		moveRoverInPlateau(this.position, new Position(this.position.getX(), this.position.getY()-1));
-    		break;
-    	case WEST:
-    		if(this.position.getX()-1 < 0) {
-    			throw new MoveRoverException();
-    		}
-    		moveRoverInPlateau(this.position, new Position(this.position.getX()-1, this.position.getY()));
-    		break;
-    	default:
-    		break;
+    //Executer les instructions
+    public void launchInstructions(String sequence){
+    	char[] instructions = sequence.toCharArray();
+    	for(char inst : instructions) {
+			switch (inst) {
+				case 'M':
+					this.move();
+					break;
+				case 'L':
+					this.turnLeft();
+					break;
+				case 'R':
+					this.turnRight();
+					break;	
+				default:
+					throw new PatternException("Bad sequence instruction! Known instructions : M,L,R");
+				}
     	}
-    }
-    
-    public void launchInstructions(){
-    	
-    	instructions.stream().forEach(inst -> {
-    		try {
-    			switch (inst) {
-    				case Move:
-						this.move();
-						break;
-    				case Left:
-						this.goLeft();
-						break;
-    				case Right:
-						this.goRight();
-						break;	
-					default:
-						break;
-					}
-    		} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-    	});
     }
 
 	public Position getPosition() {
@@ -144,14 +98,6 @@ public class Rover {
 
 	public void setDirection(DirectionsEnum direction) {
 		this.direction = direction;
-	}
-
-	public List<InstructionsEnum> getInstructions() {
-		return instructions;
-	}
-
-	public void setInstructions(List<InstructionsEnum> instructions) {
-		this.instructions = instructions;
 	}
 
 	public Plateau getPlateau() {

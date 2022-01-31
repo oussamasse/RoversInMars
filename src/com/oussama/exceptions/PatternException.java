@@ -1,7 +1,7 @@
 package com.oussama.exceptions;
 
-public class PatternException extends Exception{
+public class PatternException extends RuntimeException{
 	public PatternException(String errorCode) {
-		super("Bad Pattern! " + errorCode);
+		super(errorCode);
 	}
 }

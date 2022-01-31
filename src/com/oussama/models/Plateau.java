@@ -9,7 +9,6 @@ public class Plateau {
 	
 	int rowsCount;
 	int columnsCount;
-	Rover[][] grid;
 	List<Rover> rovers;
 	
 	
@@ -19,23 +18,28 @@ public class Plateau {
 		this.rowsCount = rowsCount;
 		this.columnsCount = columnsCount;
 		this.rovers = new ArrayList<Rover>();
-		this.grid = new Rover[rowsCount][columnsCount];
 	}
 
-	public void addRover(Rover r) throws LaunchRoverException {
-		if(!isOccupated(r.getPosition())) {
-			this.grid[r.getPosition().getX()][r.getPosition().getY()] = r;
-			r.setPlateau(this);
-			this.rovers.add(r);
-		} else {
+	//Ajouter le rover au plateau
+	public void addRover(Rover r) {
+		if(isOccupied(r.getPosition()))
 			throw new LaunchRoverException();
-		}
+		r.setPlateau(this);
+		this.rovers.add(r);
 	}
 	
-	public boolean isOccupated(Position p) {
-		if(grid[p.getX()][p.getY()] != null) {
-			return true;
+	//Voir si la position p est occupée
+	public boolean isOccupied(Position p) {
+		for (Rover r : rovers) {
+			if (r.getPosition().isEqual(p)) {
+				return true;
+			}
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "Plateau [rowsCount=" + rowsCount + ", columnsCount=" + columnsCount + "]";
 	}
 }

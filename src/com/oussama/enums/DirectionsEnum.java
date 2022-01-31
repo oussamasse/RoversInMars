@@ -1,23 +1,25 @@
 package com.oussama.enums;
 
+import com.oussama.exceptions.RoverDirectionException;
+
 public enum DirectionsEnum {
-    WEST("W"),
-    NORTH("N"),
-    EAST("E"),
-    SOUTH("S");
+    WEST('W'),
+    NORTH('N'),
+    EAST('E'),
+    SOUTH('S');
 	
-	public final String direction;
+	public final char direction;
 	
-	private DirectionsEnum(String direction) {
+	private DirectionsEnum(char direction) {
 		this.direction = direction;
 	}
 	
-	public static DirectionsEnum getEnumFromValue(String value) {
+	public static DirectionsEnum getEnumFromValue(char value) {
 		for (DirectionsEnum direc : DirectionsEnum.values()) {
-            if (direc.direction.equalsIgnoreCase(value)) {
+            if (direc.direction == value) {
                 return direc;
             }
         }
-        return null;
+		throw new RoverDirectionException(value);
 	}
 }
